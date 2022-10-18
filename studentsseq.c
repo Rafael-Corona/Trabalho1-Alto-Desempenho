@@ -4,8 +4,6 @@
 
 #define NOTAS_POSSIVEIS 101
 #define NOME_ARQ_ENTRADA "entrada.txt"
-#define DEBUG
-#define RESPONSE_TIME_TESTING
 
 
 void atribuir_parametros_entrada(int *total_regioes, int *total_cidades, int *total_alunos, int *semente)
