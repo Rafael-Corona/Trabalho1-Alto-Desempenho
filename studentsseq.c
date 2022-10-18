@@ -5,6 +5,7 @@
 #define NOTAS_POSSIVEIS 101
 #define NOME_ARQ_ENTRADA "entrada.txt"
 #define DEBUG
+#define RESPONSE_TIME_TESTING
 
 
 void atribuir_parametros_entrada(int *total_regioes, int *total_cidades, int *total_alunos, int *semente)
@@ -178,7 +179,12 @@ int main(void)
     for (int regiao = 0; regiao < total_regioes; regiao++)
         imprimir_matriz(notas, regiao, total_cidades, total_alunos);
     #endif
-
+    
+    #ifdef RESPONSE_TIME_TESTING //medicao do tempo de resposta
+    double start, end;
+    start = omp_get_wtime();
+    #endif
+    
     // Cálculos sequenciais:
     for (int regiao = 0; regiao < total_regioes; regiao++)
     {
@@ -189,9 +195,15 @@ int main(void)
                 regiao * total_cidades * total_alunos + cidade * total_alunos,
                 regiao * total_cidades * total_alunos + cidade * total_alunos + total_alunos - 1
             );
+            #ifndef RESPONSE_TIME_TESTING
             printf("Reg %d - Cid %d: mediana: %.2lf\n", regiao, cidade, calcular_mediana(contagem, total_alunos));
+            #endif
         }
     }
+    #ifndef RESPONSE_TIME_TESTING
+    end = omp_get_wtime();
+    printf("%lf\n", end-start);
+    #endif
 
     free(notas);
 
