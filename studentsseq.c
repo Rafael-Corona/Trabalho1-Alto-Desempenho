@@ -186,6 +186,8 @@ int main(void)
     #endif
     
     // Cálculos sequenciais por cidade:
+    int melhor_cidade = 0, regiao_melhor_cidade = 0;
+    double media_melhor_cidade = -1;
     for (int regiao = 0; regiao < total_regioes; regiao++)
     {
         for (int cidade = 0; cidade < total_cidades; cidade++)
@@ -198,6 +200,12 @@ int main(void)
             double dp_cidade = sqrt(calcular_soma_para_dp(notas, media_cidade, idx_inicio_cid, idx_fim_cid) / (total_alunos - 1)); 
             int *contagem_cidade = construir_contagem(notas, idx_inicio_cid, idx_fim_cid);
             double mediana_cidade = calcular_mediana(contagem_cidade, total_alunos);
+            if (media_cidade > media_melhor_cidade)
+            {
+                melhor_cidade = cidade;
+                regiao_melhor_cidade = regiao;
+                media_melhor_cidade = media_cidade;
+            }
             #ifndef RESPONSE_TIME_TESTING
             printf("Reg %d - Cid %d: menor: %d, maior %d, mediana: %.2lf, média: %.2lf e DP: %.2lf\n",
                     regiao, cidade, menor_nota_cidade, maior_nota_cidade, mediana_cidade, media_cidade, dp_cidade);
@@ -207,6 +215,8 @@ int main(void)
     }
 
     // Cálculos sequenciais por região:
+    int melhor_regiao = 0;
+    double media_melhor_regiao = -1;
     #ifndef RESPONSE_TIME_TESTING
     printf("\n");
     #endif
@@ -220,6 +230,11 @@ int main(void)
         double dp_regiao = sqrt(calcular_soma_para_dp(notas, media_regiao, idx_inicio_reg, idx_fim_reg) / (total_alunos * total_cidades - 1)); 
         int *contagem_regiao = construir_contagem(notas, idx_inicio_reg, idx_fim_reg);
         double mediana_regiao = calcular_mediana(contagem_regiao, total_alunos * total_cidades);
+        if (media_regiao > media_melhor_regiao)
+        {
+            melhor_regiao = regiao;
+            media_melhor_regiao = media_regiao;
+        }
         #ifndef RESPONSE_TIME_TESTING
         printf("Reg %d: menor: %d, maior %d, mediana: %.2lf, média: %.2lf e DP: %.2lf\n",
                 regiao, menor_nota_regiao, maior_nota_regiao, mediana_regiao, media_regiao, dp_regiao);
@@ -239,6 +254,11 @@ int main(void)
             menor_nota_brasil, maior_nota_brasil, mediana_brasil, media_brasil, dp_brasil);
     #endif
     free(contagem_brasil);
+
+    #ifndef RESPONSE_TIME_TESTING
+    printf("Melhor região: Região %d\n", melhor_regiao);
+    printf("Melhor cidade: Região %d, Cidade %d\n", regiao_melhor_cidade, melhor_cidade);
+    #endif
 
     #ifdef RESPONSE_TIME_TESTING
     end = omp_get_wtime();
