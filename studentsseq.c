@@ -5,6 +5,20 @@
 #define NOTAS_POSSIVEIS 101
 #define NOME_ARQ_ENTRADA "entrada.txt"
 
+int teste[72] = {
+    30, 40, 20, 80, 85, 10,
+    10, 20, 30, 40, 50, 60,
+    60, 50, 40, 30, 20, 10,
+    70, 55, 35, 80, 95, 27,
+    35, 45, 25, 85, 90, 15,
+    15, 25, 35, 45, 55, 65,
+    65, 55, 45, 35, 25, 15,
+    75, 60, 40, 85, 100, 32,
+    20, 30, 10, 70, 75, 00,
+    00, 10, 20, 30, 40, 50,
+    50, 40, 30, 20, 10, 00,
+    60, 45, 25, 70, 85, 17
+};
 
 void atribuir_parametros_entrada(int *total_regioes, int *total_cidades, int *total_alunos, int *semente)
 {
@@ -32,7 +46,8 @@ int *gerar_notas(int total_notas)
 
     for (int i = 0; i < total_notas; i++)
     {
-        notas[i] = rand() % NOTAS_POSSIVEIS;
+        notas[i] = teste[i];
+        // notas[i] = rand() % NOTAS_POSSIVEIS;
     }
 
     return notas;
@@ -83,7 +98,7 @@ double calcular_soma_para_dp(int *notas, double media, int idx_inicio, int idx_f
     double soma = 0;
 
     for (int i = idx_inicio; i <= idx_fim; i++)
-        soma += pow(media - notas[i], 2);
+        soma += pow(notas[i] - media, 2);
 
     return soma;
 }
@@ -104,11 +119,8 @@ double calcular_mediana(int *contagem, int total)
 {
     int  qtd_contados = 0, metade = total / 2;
 
-    for (int i = 0; i < NOTAS_POSSIVEIS; i++)
-        if (contagem[i]) printf("%d; ", i);
-    printf("\n");
-
-    if (total % 2 != 0) {
+    if (total % 2 != 0)
+    {
         for (int i = 0; i < NOTAS_POSSIVEIS; i++)
         {
             for (int j = contagem[i]; j > 0; j--)
@@ -118,7 +130,9 @@ double calcular_mediana(int *contagem, int total)
                 qtd_contados++;
             }
         }
-    } else {
+    }
+    else
+    {
         int meio1, meio2;
         for (int i = 0; i < NOTAS_POSSIVEIS; i++)
         {
@@ -133,7 +147,6 @@ double calcular_mediana(int *contagem, int total)
                     i++;
                     while (!contagem[i]) i++;
                     meio2 = i;
-                    printf("%d e %d\n", meio1, meio2);
                     return (double) (meio1 + meio2) / 2;
                 }
             }
@@ -166,10 +179,13 @@ int main(void)
     // Leitura dos parâmetros de entrada de arquivo de texto:
     int total_regioes, total_cidades, total_alunos, semente;
     atribuir_parametros_entrada(&total_regioes, &total_cidades, &total_alunos, &semente);
+
+    // Cálculo do total final de notas:
+    int total_final_notas = total_regioes * total_cidades * total_alunos;
     
     // Geração das notas aleatórias de acordo com a semente lida:
     srand(semente);
-    int *notas = gerar_notas(total_regioes * total_cidades * total_alunos);
+    int *notas = gerar_notas(total_final_notas);
 
     // Impressão das matrizes de notas:
     #ifdef DEBUG
@@ -177,27 +193,68 @@ int main(void)
     for (int regiao = 0; regiao < total_regioes; regiao++)
         imprimir_matriz(notas, regiao, total_cidades, total_alunos);
     #endif
-    
-    #ifdef RESPONSE_TIME_TESTING //medicao do tempo de resposta
+
+    // Medição do tempo de resposta:
+    #ifdef RESPONSE_TIME_TESTING 
     double start, end;
     start = omp_get_wtime();
     #endif
     
-    // Cálculos sequenciais:
+    // Cálculos sequenciais por cidade:
     for (int regiao = 0; regiao < total_regioes; regiao++)
     {
         for (int cidade = 0; cidade < total_cidades; cidade++)
         {
-            int *contagem = construir_contagem(
-                notas,
-                regiao * total_cidades * total_alunos + cidade * total_alunos,
-                regiao * total_cidades * total_alunos + cidade * total_alunos + total_alunos - 1
-            );
+            int idx_inicio_cid = regiao * total_cidades * total_alunos + cidade * total_alunos;
+            int idx_fim_cid = regiao * total_cidades * total_alunos + cidade * total_alunos + total_alunos - 1;
+            int menor_nota_cidade = obter_menor_nota(notas, idx_inicio_cid, idx_fim_cid);
+            int maior_nota_cidade = obter_maior_nota(notas, idx_inicio_cid, idx_fim_cid);
+            double media_cidade = calcular_soma_para_media(notas, idx_inicio_cid, idx_fim_cid) / (double) total_alunos;
+            double dp_cidade = sqrt(calcular_soma_para_dp(notas, media_cidade, idx_inicio_cid, idx_fim_cid) / (total_alunos - 1)); 
+            int *contagem_cidade = construir_contagem(notas, idx_inicio_cid, idx_fim_cid);
+            double mediana_cidade = calcular_mediana(contagem_cidade, total_alunos);
             #ifndef RESPONSE_TIME_TESTING
-            printf("Reg %d - Cid %d: mediana: %.2lf\n", regiao, cidade, calcular_mediana(contagem, total_alunos));
+            printf("Reg %d - Cid %d: menor: %d, maior %d, mediana: %.2lf, média: %.2lf e DP: %.2lf\n",
+                    regiao, cidade, menor_nota_cidade, maior_nota_cidade, mediana_cidade, media_cidade, dp_cidade);
             #endif
+            free(contagem_cidade);
         }
     }
+
+    // Cálculos sequenciais por região:
+    #ifndef RESPONSE_TIME_TESTING
+    printf("\n");
+    #endif
+    for (int regiao = 0; regiao < total_regioes; regiao++)
+    {
+        int idx_inicio_reg = regiao * total_cidades * total_alunos;
+        int idx_fim_reg = regiao * total_cidades * total_alunos + total_cidades * total_alunos - 1;
+        int menor_nota_regiao = obter_menor_nota(notas, idx_inicio_reg, idx_fim_reg);
+        int maior_nota_regiao = obter_maior_nota(notas, idx_inicio_reg, idx_fim_reg);
+        double media_regiao = calcular_soma_para_media(notas, idx_inicio_reg, idx_fim_reg) / (double) (total_alunos * total_cidades);
+        double dp_regiao = sqrt(calcular_soma_para_dp(notas, media_regiao, idx_inicio_reg, idx_fim_reg) / (total_alunos * total_cidades - 1)); 
+        int *contagem_regiao = construir_contagem(notas, idx_inicio_reg, idx_fim_reg);
+        double mediana_regiao = calcular_mediana(contagem_regiao, total_alunos * total_cidades);
+        #ifndef RESPONSE_TIME_TESTING
+        printf("Reg %d: menor: %d, maior %d, mediana: %.2lf, média: %.2lf e DP: %.2lf\n",
+                regiao, menor_nota_regiao, maior_nota_regiao, mediana_regiao, media_regiao, dp_regiao);
+        #endif
+        free(contagem_regiao);
+    }
+
+    // Cálculo sequencial para o Brasil:
+    int menor_nota_brasil = obter_menor_nota(notas, 0, total_final_notas - 1);
+    int maior_nota_brasil = obter_maior_nota(notas, 0, total_final_notas - 1);
+    double media_brasil = calcular_soma_para_media(notas, 0, total_final_notas - 1) / (double) total_final_notas;
+    double dp_brasil = sqrt(calcular_soma_para_dp(notas, media_brasil, 0, total_final_notas - 1) / (total_final_notas - 1)); 
+    int *contagem_brasil = construir_contagem(notas, 0, total_final_notas - 1);
+    double mediana_brasil = calcular_mediana(contagem_brasil, total_final_notas);
+    #ifndef RESPONSE_TIME_TESTING
+    printf("\nBrasil: menor: %d, maior %d, mediana: %.2lf, média: %.2lf e DP: %.2lf\n",
+            menor_nota_brasil, maior_nota_brasil, mediana_brasil, media_brasil, dp_brasil);
+    #endif
+    free(contagem_brasil);
+
     #ifdef RESPONSE_TIME_TESTING
     end = omp_get_wtime();
     printf("%lf\n", end-start);
