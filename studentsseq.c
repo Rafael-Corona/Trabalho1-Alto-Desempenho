@@ -198,7 +198,7 @@ int main(void)
             #endif
         }
     }
-    #ifndef RESPONSE_TIME_TESTING
+    #ifdef RESPONSE_TIME_TESTING
     end = omp_get_wtime();
     printf("%lf\n", end-start);
     #endif
