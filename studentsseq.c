@@ -5,20 +5,6 @@
 #define NOTAS_POSSIVEIS 101
 #define NOME_ARQ_ENTRADA "entrada.txt"
 
-int teste[72] = {
-    30, 40, 20, 80, 85, 10,
-    10, 20, 30, 40, 50, 60,
-    60, 50, 40, 30, 20, 10,
-    70, 55, 35, 80, 95, 27,
-    35, 45, 25, 85, 90, 15,
-    15, 25, 35, 45, 55, 65,
-    65, 55, 45, 35, 25, 15,
-    75, 60, 40, 85, 100, 32,
-    20, 30, 10, 70, 75, 00,
-    00, 10, 20, 30, 40, 50,
-    50, 40, 30, 20, 10, 00,
-    60, 45, 25, 70, 85, 17
-};
 
 void atribuir_parametros_entrada(int *total_regioes, int *total_cidades, int *total_alunos, int *semente)
 {
@@ -46,8 +32,7 @@ int *gerar_notas(int total_notas)
 
     for (int i = 0; i < total_notas; i++)
     {
-        notas[i] = teste[i];
-        // notas[i] = rand() % NOTAS_POSSIVEIS;
+        notas[i] = rand() % NOTAS_POSSIVEIS;
     }
 
     return notas;
