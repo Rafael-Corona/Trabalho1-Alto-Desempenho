@@ -38,32 +38,22 @@ int *gerar_notas(int total_notas)
     return notas;
 }
 
-
-int obter_menor_nota(int *notas, int idx_inicio, int idx_fim)
+void obter_menor_e_maior_nota(int *notas, int *menor_nota, int *maior_nota, int idx_inicio, int idx_fim)
 {
-    int menor_nota = NOTAS_POSSIVEIS;
+    int maior_nota_tmp = -1;
+    int menor_nota_tmp = 101;
 
     for (int i = idx_inicio; i <= idx_fim; i++)
     {
-        if (notas[i] < menor_nota)
-            menor_nota = notas[i];
-    }
-
-    return menor_nota;
-}
-
-
-int obter_maior_nota(int *notas, int idx_inicio, int idx_fim)
-{
-    int maior_nota = -1;
-
-    for (int i = idx_inicio; i <= idx_fim; i++)
-    {
-        if (notas[i] > maior_nota)
-            maior_nota = notas[i];
-    }
-
-    return maior_nota;
+        if (notas[i] > maior_nota_tmp){
+            maior_nota_tmp = notas[i];
+        }
+        if (notas[i] < menor_nota_tmp){
+            menor_nota_tmp = notas[i];
+        }
+    }  
+    *maior_nota = maior_nota_tmp;
+    *menor_nota = menor_nota_tmp;
 }
 
 
@@ -185,6 +175,8 @@ int main(void)
     start = omp_get_wtime();
     #endif
     
+    
+
     // Cálculos sequenciais por cidade:
     int melhor_cidade = 0, regiao_melhor_cidade = 0;
     double media_melhor_cidade = -1;
@@ -194,8 +186,9 @@ int main(void)
         {
             int idx_inicio_cid = regiao * total_cidades * total_alunos + cidade * total_alunos;
             int idx_fim_cid = regiao * total_cidades * total_alunos + cidade * total_alunos + total_alunos - 1;
-            int menor_nota_cidade = obter_menor_nota(notas, idx_inicio_cid, idx_fim_cid);
-            int maior_nota_cidade = obter_maior_nota(notas, idx_inicio_cid, idx_fim_cid);
+            int menor_nota_cidade;
+            int maior_nota_cidade;
+            obter_menor_e_maior_nota(notas, &menor_nota_cidade, &maior_nota_cidade, idx_inicio_cid, idx_fim_cid);
             double media_cidade = calcular_soma_para_media(notas, idx_inicio_cid, idx_fim_cid) / (double) total_alunos;
             double dp_cidade = sqrt(calcular_soma_para_dp(notas, media_cidade, idx_inicio_cid, idx_fim_cid) / (total_alunos - 1)); 
             int *contagem_cidade = construir_contagem(notas, idx_inicio_cid, idx_fim_cid);
@@ -224,8 +217,9 @@ int main(void)
     {
         int idx_inicio_reg = regiao * total_cidades * total_alunos;
         int idx_fim_reg = regiao * total_cidades * total_alunos + total_cidades * total_alunos - 1;
-        int menor_nota_regiao = obter_menor_nota(notas, idx_inicio_reg, idx_fim_reg);
-        int maior_nota_regiao = obter_maior_nota(notas, idx_inicio_reg, idx_fim_reg);
+        int menor_nota_regiao;
+        int maior_nota_regiao;
+        obter_menor_e_maior_nota(notas, &menor_nota_regiao, &maior_nota_regiao, idx_inicio_reg, idx_fim_reg);
         double media_regiao = calcular_soma_para_media(notas, idx_inicio_reg, idx_fim_reg) / (double) (total_alunos * total_cidades);
         double dp_regiao = sqrt(calcular_soma_para_dp(notas, media_regiao, idx_inicio_reg, idx_fim_reg) / (total_alunos * total_cidades - 1)); 
         int *contagem_regiao = construir_contagem(notas, idx_inicio_reg, idx_fim_reg);
@@ -243,8 +237,9 @@ int main(void)
     }
 
     // Cálculo sequencial para o Brasil:
-    int menor_nota_brasil = obter_menor_nota(notas, 0, total_final_notas - 1);
-    int maior_nota_brasil = obter_maior_nota(notas, 0, total_final_notas - 1);
+    int menor_nota_brasil;
+    int maior_nota_brasil;
+    obter_menor_e_maior_nota(notas, &menor_nota_brasil, &maior_nota_brasil, 0, total_final_notas - 1);
     double media_brasil = calcular_soma_para_media(notas, 0, total_final_notas - 1) / (double) total_final_notas;
     double dp_brasil = sqrt(calcular_soma_para_dp(notas, media_brasil, 0, total_final_notas - 1) / (total_final_notas - 1)); 
     int *contagem_brasil = construir_contagem(notas, 0, total_final_notas - 1);
@@ -252,6 +247,7 @@ int main(void)
     #ifndef RESPONSE_TIME_TESTING
     printf("\nBrasil: menor: %d, maior %d, mediana: %.2lf, média: %.2lf e DP: %.2lf\n",
             menor_nota_brasil, maior_nota_brasil, mediana_brasil, media_brasil, dp_brasil);
+
     #endif
     free(contagem_brasil);
 
@@ -259,6 +255,7 @@ int main(void)
     printf("Melhor região: Região %d\n", melhor_regiao);
     printf("Melhor cidade: Região %d, Cidade %d\n", regiao_melhor_cidade, melhor_cidade);
     #endif
+
 
     #ifdef RESPONSE_TIME_TESTING
     end = omp_get_wtime();
