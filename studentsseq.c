@@ -129,33 +129,33 @@ void obter_menor_e_maior_nota(int *notas, int *menor_nota, int *maior_nota, int 
     *menor_nota = menor_nota_tmp;
 }
 
-int obter_melhor_regiao(double *media_de_cada_regiao, int idx_inicio, int idx_fim)
+int obter_melhor_regiao(int *soma_de_cada_regiao, int idx_inicio, int idx_fim)
 {
     int regiao = 0;
-    double melhor_media = -1;
+    int maior_soma = -1;
 
     for (int i = idx_inicio; i <= idx_fim; i++)
     {
-        if (media_de_cada_regiao[i] > melhor_media){
+        if (soma_de_cada_regiao[i] > maior_soma){
             regiao = i;
-            melhor_media = media_de_cada_regiao[i];
+            maior_soma = soma_de_cada_regiao[i];
         }
     }
     return regiao;
 }
-void melhor_cidade_e_sua_regiao(double *media_de_cada_cidade, int total_regioes, int cidades_por_regiao ,int *melhor_cidade, int*regiao)
+void melhor_cidade_e_sua_regiao(int *soma_de_cada_cidade, int total_regioes, int cidades_por_regiao ,int *melhor_cidade, int*regiao)
 {
     *melhor_cidade = 0;
     *regiao = 0;
 
-    double melhor_media = -1;
+    int maior_soma = -1;
     int last = total_regioes * cidades_por_regiao-1;
 
     for (int i = 0; i <= last; i++)
     {
-        if (media_de_cada_cidade[i] > melhor_media){
+        if (soma_de_cada_cidade[i] > maior_soma){
             *melhor_cidade = i % cidades_por_regiao;
-            melhor_media = media_de_cada_cidade[i];
+            maior_soma = soma_de_cada_cidade[i];
             *regiao = i / cidades_por_regiao;
         }
     }
@@ -292,7 +292,7 @@ int main(void)
     // Cálculos sequenciais por cidade:
     int *maior_nota_de_cada_cidade = malloc(sizeof(int) * cidades_por_regiao * total_regioes);
     int *menor_nota_de_cada_cidade = malloc(sizeof(int) * cidades_por_regiao * total_regioes);
-    double *media_de_cada_cidade = malloc(sizeof(double) * cidades_por_regiao * total_regioes);
+    int *soma_de_cada_cidade = malloc(sizeof(int) * cidades_por_regiao * total_regioes);
 
     for (int regiao = 0; regiao < total_regioes; regiao++)
     {
@@ -303,13 +303,14 @@ int main(void)
             int menor_nota_cidade;
             int maior_nota_cidade;
             obter_menor_e_maior_nota(notas, &menor_nota_cidade, &maior_nota_cidade, idx_inicio_cid, idx_fim_cid);
-            double media_cidade = soma_vetor_int(notas, idx_inicio_cid, idx_fim_cid) / (double) alunos_por_cidade; 
+            int soma_cidade = soma_vetor_int(notas, idx_inicio_cid, idx_fim_cid);
+            double media_cidade = (double) soma_cidade / (double) alunos_por_cidade; 
             double dp_cidade = sqrt(calcular_soma_para_dp(notas, media_cidade, idx_inicio_cid, idx_fim_cid) / (alunos_por_cidade - 1)); 
             int *contagem_cidade = construir_contagem(notas, idx_inicio_cid, idx_fim_cid);
             double mediana_cidade = calcular_mediana(contagem_cidade, alunos_por_cidade);
             maior_nota_de_cada_cidade[regiao*cidades_por_regiao + cidade] = maior_nota_cidade;
             menor_nota_de_cada_cidade[regiao*cidades_por_regiao + cidade] = menor_nota_cidade;
-            media_de_cada_cidade[regiao*cidades_por_regiao + cidade] = media_cidade;
+            soma_de_cada_cidade[regiao*cidades_por_regiao + cidade] = soma_cidade;
 
             #ifndef RESPONSE_TIME_TESTING
             printf("Reg %d - Cid %d: menor: %d, maior %d, mediana: %.2lf, média: %.2lf e DP: %.2lf\n",
@@ -323,37 +324,39 @@ int main(void)
 
     int *maior_nota_de_cada_regiao = malloc(sizeof(int) * total_regioes);
     int *menor_nota_de_cada_regiao= malloc(sizeof(int) * total_regioes);
-    double *media_de_cada_regiao = malloc(sizeof(double) * total_regioes);
+    int *soma_de_cada_regiao = malloc(sizeof(int) * total_regioes);
 
     #ifndef RESPONSE_TIME_TESTING
     printf("\n");
     #endif
     for (int regiao = 0; regiao < total_regioes; regiao++)
     {
+        int alunos_por_regiao = cidades_por_regiao * alunos_por_cidade;
         int idx_inicio_reg = regiao * cidades_por_regiao * alunos_por_cidade;
         int idx_fim_reg = regiao * cidades_por_regiao * alunos_por_cidade + cidades_por_regiao * alunos_por_cidade - 1;
         int idx_inicio_vetor_cidade = regiao * cidades_por_regiao;
         int idx_fim_vetor_cidade = idx_inicio_vetor_cidade + cidades_por_regiao-1; 
         int menor_nota_regiao = obter_menor_valor_int(menor_nota_de_cada_cidade, idx_inicio_vetor_cidade, idx_fim_vetor_cidade);
         int maior_nota_regiao = obter_maior_valor_int(maior_nota_de_cada_cidade, idx_inicio_vetor_cidade, idx_fim_vetor_cidade);
-        double media_regiao = soma_vetor_double(media_de_cada_cidade, idx_inicio_vetor_cidade, idx_fim_vetor_cidade) / (double) (cidades_por_regiao);
+        int soma_regiao = soma_vetor_int(soma_de_cada_cidade, idx_inicio_vetor_cidade, idx_fim_vetor_cidade);
+        double media_regiao = (double) soma_regiao / (double) (alunos_por_regiao);
         double dp_regiao = sqrt(calcular_soma_para_dp(notas, media_regiao, idx_inicio_reg, idx_fim_reg) / (alunos_por_cidade * cidades_por_regiao - 1)); 
         int *contagem_regiao = construir_contagem(notas, idx_inicio_reg, idx_fim_reg);
         double mediana_regiao = calcular_mediana(contagem_regiao, alunos_por_cidade * cidades_por_regiao);
         maior_nota_de_cada_regiao[regiao] = maior_nota_regiao;
         menor_nota_de_cada_regiao[regiao] = menor_nota_regiao;
-        media_de_cada_regiao[regiao] = media_regiao;
+        soma_de_cada_regiao[regiao] = soma_regiao;
         #ifndef RESPONSE_TIME_TESTING
         printf("Reg %d: menor: %d, maior %d, mediana: %.2lf, média: %.2lf e DP: %.2lf\n",
                 regiao, menor_nota_regiao, maior_nota_regiao, mediana_regiao, media_regiao, dp_regiao);
         #endif
         free(contagem_regiao);
     }
-
     // Cálculo sequencial para o Brasil:
     int menor_nota_brasil = obter_menor_valor_int(menor_nota_de_cada_regiao, 0, total_regioes-1);
     int maior_nota_brasil = obter_maior_valor_int(maior_nota_de_cada_regiao, 0, total_regioes-1);
-    double media_brasil = soma_vetor_double(media_de_cada_regiao, 0,total_regioes-1) / (double) total_regioes;
+    int soma_brasil = soma_vetor_int(soma_de_cada_regiao, 0,total_regioes-1);
+    double media_brasil =  (double) soma_brasil / total_final_notas;
     double dp_brasil = sqrt(calcular_soma_para_dp(notas, media_brasil, 0, total_final_notas - 1) / (total_final_notas - 1)); 
     int *contagem_brasil = construir_contagem(notas, 0, total_final_notas - 1);
     double mediana_brasil = calcular_mediana(contagem_brasil, total_final_notas);
@@ -364,13 +367,13 @@ int main(void)
     #endif
     free(contagem_brasil);
 
-    int melhor_regiao = obter_melhor_regiao(media_de_cada_regiao, 0, total_regioes-1);
+    int melhor_regiao = obter_melhor_regiao(soma_de_cada_regiao, 0, total_regioes-1);
     int regiao_melhor_cidade;
     int melhor_cidade;
-    melhor_cidade_e_sua_regiao(media_de_cada_cidade, total_regioes, cidades_por_regiao, &melhor_cidade, &regiao_melhor_cidade);
+    melhor_cidade_e_sua_regiao(soma_de_cada_cidade, total_regioes, cidades_por_regiao, &melhor_cidade, &regiao_melhor_cidade);
 
-    free(media_de_cada_cidade);
-    free(media_de_cada_regiao);
+    free(soma_de_cada_cidade);
+    free(soma_de_cada_regiao);
     free(menor_nota_de_cada_cidade);
     free(menor_nota_de_cada_regiao);
     free(maior_nota_de_cada_cidade);
