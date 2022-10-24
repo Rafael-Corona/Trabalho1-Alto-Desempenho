@@ -140,22 +140,29 @@ unsigned obter_maior_valor_long(unsigned long *notas, unsigned idx_inicio, unsig
     return maior_nota;
 }
 
-void obter_menor_e_maior_nota(unsigned *notas, unsigned *menor_nota, unsigned *maior_nota, unsigned idx_inicio, unsigned idx_fim)
+//void somar_contagens(unsigned *)
+
+unsigned *obter_menor_maior_contagem_soma(unsigned *notas, unsigned *menor_nota, unsigned *maior_nota, 
+                                            unsigned long *soma, unsigned idx_inicio, unsigned idx_fim)
 {
-    unsigned maior_nota_tmp = 0;
-    unsigned menor_nota_tmp = NOTAS_POSSIVEIS;
+    *maior_nota = 0;
+    *menor_nota = NOTAS_POSSIVEIS;
+    *soma = 0;
+    unsigned *contagem = (unsigned*) calloc(NOTAS_POSSIVEIS, sizeof(unsigned));
+
 
     for (unsigned i = idx_inicio; i <= idx_fim; i++)
     {
-        if (notas[i] > maior_nota_tmp){
-            maior_nota_tmp = notas[i];
+        contagem[notas[i]]++;
+        *soma += notas[i];
+        if (notas[i] > *maior_nota){
+            *maior_nota = notas[i];
         }
-        if (notas[i] < menor_nota_tmp){
-            menor_nota_tmp = notas[i];
+        if (notas[i] < *menor_nota){
+            *menor_nota = notas[i];
         }
     }  
-    *maior_nota = maior_nota_tmp;
-    *menor_nota = menor_nota_tmp;
+    return contagem;
 }
 
 unsigned obter_melhor_regiao(unsigned long *soma_de_cada_regiao, unsigned idx_inicio, unsigned idx_fim)
