@@ -140,7 +140,31 @@ unsigned obter_maior_valor_long(unsigned long *notas, unsigned idx_inicio, unsig
     return maior_nota;
 }
 
-//void somar_contagens(unsigned *)
+unsigned *somar_contagens(unsigned **lista_contagens, unsigned idx_inicio, unsigned idx_fim)
+{
+    unsigned *resultado = (unsigned*) calloc(NOTAS_POSSIVEIS, sizeof(unsigned));
+
+    for (unsigned i = idx_inicio; i <= idx_fim; i++)
+    {
+        for (unsigned j = 0; j < NOTAS_POSSIVEIS; j++)
+        {  
+            resultado[j] += lista_contagens[i][j];
+            //resultado[j] += 1;
+            
+        }
+    }
+    return resultado;
+}
+
+void free_lista_contagem(unsigned **lista_contagens, unsigned size)
+{
+    for (unsigned i = 0; i < size; i++)
+    {
+        free(lista_contagens[i]);
+    }
+    free(lista_contagens);
+
+}
 
 unsigned *obter_menor_maior_contagem_soma(unsigned *notas, unsigned *menor_nota, unsigned *maior_nota, 
                                             unsigned long *soma, unsigned idx_inicio, unsigned idx_fim)
