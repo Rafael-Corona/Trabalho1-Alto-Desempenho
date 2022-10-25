@@ -48,7 +48,7 @@ void atribuir_parametros_entrada(unsigned *total_regioes, unsigned *cidades_por_
 
 unsigned *gerar_notas(unsigned total_notas)
 {
-    unsigned *notas = (unsigned*) malloc(total_notas * sizeof(unsigned *));
+    unsigned *notas = (unsigned*) malloc(total_notas * sizeof(unsigned));
 
     for (unsigned i = 0; i < total_notas; i++)
     {
