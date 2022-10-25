@@ -166,27 +166,33 @@ void free_lista_contagem(unsigned **lista_contagens, unsigned size)
 
 }
 
-unsigned *obter_menor_maior_contagem_soma(unsigned *notas, unsigned *menor_nota, unsigned *maior_nota, 
+unsigned *obter_contagem(unsigned *notas, unsigned idx_inicio, unsigned idx_fim)
+{
+    unsigned *contagem = (unsigned*) calloc(NOTAS_POSSIVEIS, sizeof(unsigned));
+
+    for (unsigned i = idx_inicio; i <= idx_fim; i++)
+    {
+        contagem[notas[i]]++;
+    }  
+
+    return contagem;
+}
+
+void obter_menor_maior_soma(unsigned *notas, unsigned *menor_nota, unsigned *maior_nota, 
                                             unsigned long *soma, unsigned idx_inicio, unsigned idx_fim)
 {
     *maior_nota = 0;
     *menor_nota = NOTAS_POSSIVEIS;
     *soma = 0;
-    unsigned *contagem = (unsigned*) calloc(NOTAS_POSSIVEIS, sizeof(unsigned));
-
 
     for (unsigned i = idx_inicio; i <= idx_fim; i++)
     {
-        contagem[notas[i]]++;
         *soma += notas[i];
-        if (notas[i] > *maior_nota){
+        if (notas[i] > *maior_nota)
             *maior_nota = notas[i];
-        }
-        if (notas[i] < *menor_nota){
+        if (notas[i] < *menor_nota)
             *menor_nota = notas[i];
-        }
     }  
-    return contagem;
 }
 
 unsigned obter_melhor_regiao(unsigned long *soma_de_cada_regiao, unsigned idx_inicio, unsigned idx_fim)

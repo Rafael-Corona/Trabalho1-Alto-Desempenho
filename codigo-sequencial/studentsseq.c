@@ -44,11 +44,12 @@ int main(void)
             unsigned idx_inicio_cid = regiao * cidades_por_regiao * alunos_por_cidade + cidade * alunos_por_cidade;
             unsigned idx_fim_cid = idx_inicio_cid + alunos_por_cidade - 1;
             unsigned idx_cidade_dentro_brasil = regiao*cidades_por_regiao + cidade;
-            unsigned menor_nota_cidade;
-            unsigned maior_nota_cidade;
+            unsigned menor_nota_cidade, maior_nota_cidade;
             unsigned long soma_cidade;
-            unsigned *contagem_cidade = obter_menor_maior_contagem_soma(notas, &menor_nota_cidade, &maior_nota_cidade, &soma_cidade, idx_inicio_cid, idx_fim_cid);
+            obter_menor_maior_soma(notas, &menor_nota_cidade, &maior_nota_cidade, &soma_cidade, idx_inicio_cid, idx_fim_cid);
+            unsigned *contagem_cidade = obter_contagem(notas, idx_inicio_cid, idx_fim_cid);
             contagem_de_cada_cidade[idx_cidade_dentro_brasil] = contagem_cidade;
+
             double media_cidade = (double) soma_cidade / (double) alunos_por_cidade; 
 
             double dp_cidade = sqrt(calcular_soma_para_dp(notas, media_cidade, idx_inicio_cid, idx_fim_cid) / (alunos_por_cidade - 1)); 
