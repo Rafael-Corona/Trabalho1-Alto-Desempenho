@@ -27,8 +27,14 @@ int main(void)
 
     // Medição do tempo de resposta:
     #ifdef RESPONSE_TIME_TESTING 
-    double start, end;
-    start = omp_get_wtime();
+    unsigned NRUNS = 10;
+    double sum = 0;
+    double *iterations = malloc(sizeof(double) * NRUNS);
+
+    for (unsigned i = 0; i < NRUNS; i++)
+    {
+        double start, end;
+        start = omp_get_wtime();
     #endif
     
     // Cálculos sequenciais por cidade:
@@ -137,8 +143,21 @@ int main(void)
     
 
     #ifdef RESPONSE_TIME_TESTING
-    end = omp_get_wtime();
-    printf("Tempo de resposta = %lf\n", end-start);
+        end = omp_get_wtime();
+        printf("Iteracao %u. Tempo de resposta = %lf\n",i , end-start);
+        sum += end-start;
+        iterations[i] = end-start;
+        clean_cache();
+    }
+    double average = sum / NRUNS;
+    double parcial = 0;
+    for (unsigned j = 0; j < NRUNS; j++)
+        parcial += pow(iterations[j] - average, 2);
+
+    printf("Tempo médio = %lf\n", average);
+    printf("Desvio padrão = %lf\n", parcial/NRUNS-1);
+
+    
     #else
     printf("Melhor região: Região %d\n", melhor_regiao);
     printf("Melhor cidade: Região %d, Cidade %d\n", regiao_melhor_cidade, melhor_cidade);
