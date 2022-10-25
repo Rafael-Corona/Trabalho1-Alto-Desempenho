@@ -172,14 +172,8 @@ void obter_menor_maior_soma(unsigned *notas, unsigned *menor_nota, unsigned *mai
     unsigned maior = 0, menor = NOTAS_POSSIVEIS;
     unsigned long soma = 0;
 
-    // #pragma omp parallel for reduction(+ : soma) reduction(max : maior) reduction(min : menor)
     for (unsigned i = idx_inicio; i <= idx_fim; i++)
     {
-        // *soma += notas[i];
-        // if (notas[i] > *maior_nota)
-        //     *maior_nota = notas[i];
-        // if (notas[i] < *menor_nota)
-        //     *menor_nota = notas[i];
         soma += notas[i];
         if (notas[i] > maior)
             maior = notas[i];
@@ -187,29 +181,6 @@ void obter_menor_maior_soma(unsigned *notas, unsigned *menor_nota, unsigned *mai
             menor = notas[i];
     }  
 
-    // #pragma omp parallel for reduction(+ : soma)
-    // for (unsigned i = idx_inicio; i <= idx_fim; i++)
-    // {
-    //     soma += notas[i];
-    // }  
-
-    // #pragma omp parallel for reduction(max : maior)
-    // for (unsigned i = idx_inicio; i <= idx_fim; i++)
-    // {
-    //     if (notas[i] > maior)
-    //         maior = notas[i];
-    // }  
-
-    // #pragma omp parallel for reduction(min : menor)
-    // for (unsigned i = idx_inicio; i <= idx_fim; i++)
-    // {
-    //     if (notas[i] < menor)
-    //         menor = notas[i];
-    // }  
-
-    // *maior_nota = 0;
-    // *menor_nota = NOTAS_POSSIVEIS;
-    // *soma = 0;
     *maior_nota = maior;
     *menor_nota = menor;
     *soma_notas = soma;

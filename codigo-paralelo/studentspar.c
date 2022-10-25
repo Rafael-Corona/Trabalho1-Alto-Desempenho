@@ -72,7 +72,6 @@ int main(void)
             media_de_cada_cidade[idx_cidade_dentro_brasil] = media_cidade;
             dp_cidade = sqrt(calcular_soma_para_dp(notas, media_cidade, idx_inicio_cid, idx_fim_cid) / (alunos_por_cidade - 1));
             dp_de_cada_cidade[idx_cidade_dentro_brasil] = dp_cidade;
-            // TODO: Mover impressão para o final, pois vai ficar fora de ordem
             #ifndef RESPONSE_TIME_TESTING
             #endif
         }
