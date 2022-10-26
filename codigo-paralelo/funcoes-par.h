@@ -38,10 +38,37 @@ void atribuir_parametros_entrada(unsigned *total_regioes, unsigned *cidades_por_
         exit(-1);
     }
 
-    fscanf(fp, "%u", total_regioes);
-    fscanf(fp, "%u", cidades_por_regiao);
-    fscanf(fp, "%u", alunos_por_cidade);
-    fscanf(fp, "%u", semente);
+    if(fscanf(fp, "%u", total_regioes) == 1);
+    else
+    {
+        fprintf(stderr, "Erro ao extrair informações do arquivo de entrada!\n");
+        fprintf(stderr, "Verifique o arquivo de nome \"entrada.txt\" e seu conteúdo\n");
+        exit(-1);
+    }
+
+    if(fscanf(fp, "%u", cidades_por_regiao) == 1);
+    else
+    {
+        fprintf(stderr, "Erro ao extrair informações do arquivo de entrada!\n");
+        fprintf(stderr, "Verifique o arquivo de nome \"entrada.txt\" e seu conteúdo\n");
+        exit(-1);
+    }
+
+    if(fscanf(fp, "%u", alunos_por_cidade) == 1);
+    else
+    {
+        fprintf(stderr, "Erro ao extrair informações do arquivo de entrada!\n");
+        fprintf(stderr, "Verifique o arquivo de nome \"entrada.txt\" e seu conteúdo\n");
+        exit(-1);
+    }
+
+    if(fscanf(fp, "%u", semente) == 1);
+    else
+    {
+        fprintf(stderr, "Erro ao extrair informações do arquivo de entrada!\n");
+        fprintf(stderr, "Verifique o arquivo de nome \"entrada.txt\" e seu conteúdo\n");
+        exit(-1);
+    }
 
     fclose(fp);
     #endif

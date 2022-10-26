@@ -1,5 +1,5 @@
 CC = gcc
-FLAGS = -Wall -Wextra -lm -fopenmp -Wunused -pedantic -ansi -std=c11
+FLAGS = -O3 -Wall -Wextra -lm -fopenmp -Wunused -pedantic -ansi -std=c11
 SEQUENCIAL = studentsseq
 PARALELO = studentspar
 SEQUENCIAL_FOLDER = codigo-sequencial
