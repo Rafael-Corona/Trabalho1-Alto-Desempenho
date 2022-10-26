@@ -38,10 +38,10 @@ void atribuir_parametros_entrada(unsigned *total_regioes, unsigned *cidades_por_
         exit(-1);
     }
 
-    fscanf(fp, "%d", total_regioes);
-    fscanf(fp, "%d", cidades_por_regiao);
-    fscanf(fp, "%d", alunos_por_cidade);
-    fscanf(fp, "%d", semente);
+    fscanf(fp, "%u", total_regioes);
+    fscanf(fp, "%u", cidades_por_regiao);
+    fscanf(fp, "%u", alunos_por_cidade);
+    fscanf(fp, "%u", semente);
 
     fclose(fp);
     #endif
