@@ -4,8 +4,6 @@
 #include <omp.h>
 #include "funcoes-par.h"
 
-#define TOTAL_THREADS 4
-
 int main(void)
 {
     // Configuração do número padrão de threads:

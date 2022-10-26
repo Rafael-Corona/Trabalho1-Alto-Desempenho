@@ -1,6 +1,8 @@
 #define NOTAS_POSSIVEIS 101
 #define NOME_ARQ_ENTRADA "entrada.txt"
 
+#define TOTAL_THREADS 4
+
 #ifdef DEBUG
 unsigned teste[72] = {
     30, 40, 20, 80, 85, 10,
@@ -172,14 +174,32 @@ void obter_menor_maior_soma(unsigned *notas, unsigned *menor_nota, unsigned *mai
     unsigned maior = 0, menor = NOTAS_POSSIVEIS;
     unsigned long soma = 0;
 
-    for (unsigned i = idx_inicio; i <= idx_fim; i++)
+    #pragma omp sections
     {
-        soma += notas[i];
-        if (notas[i] > maior)
-            maior = notas[i];
-        if (notas[i] < menor)
-            menor = notas[i];
-    }  
+        #pragma omp section
+        {
+            for (unsigned i = idx_inicio; i <= idx_fim; i++)
+            {
+                soma += notas[i];
+            }  
+        }
+        #pragma omp section
+        {
+            for (unsigned i = idx_inicio; i <= idx_fim; i++)
+            {
+                if (notas[i] > maior)
+                    maior = notas[i];
+            }  
+        }
+        #pragma omp section
+        {
+            for (unsigned i = idx_inicio; i <= idx_fim; i++)
+            {
+                if (notas[i] < menor)
+                    menor = notas[i];
+            }  
+        }
+    }
 
     *maior_nota = maior;
     *menor_nota = menor;
@@ -212,6 +232,7 @@ unsigned obter_melhor_regiao(unsigned long *soma_de_cada_regiao, unsigned idx_in
     }
     return regiao;
 }
+
 void melhor_cidade_e_sua_regiao(unsigned long *soma_de_cada_cidade, unsigned total_regioes, unsigned cidades_por_regiao ,unsigned *melhor_cidade, unsigned*regiao)
 {
     *melhor_cidade = 0;
