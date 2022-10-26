@@ -155,9 +155,13 @@ int main(void)
         parcial += pow(iterations[j] - average, 2);
 
     printf("Tempo médio = %lf\n", average);
-    printf("Desvio padrão = %lf\n", parcial/NRUNS-1);
+    printf("Desvio padrão = %lf\n", parcial/NRUNS);
 
-    
+    double z_value = 2.576; //correspondente ao intervalo de confiança de 99%
+    double error_margin = fabs(z_value * ((parcial/NRUNS) / sqrt(NRUNS)));
+
+    printf("Levando em conta um nível de confiança de 99%% a margem de erro é de: +-%lf", error_margin);
+
     #else
     printf("Melhor região: Região %d\n", melhor_regiao);
     printf("Melhor cidade: Região %d, Cidade %d\n", regiao_melhor_cidade, melhor_cidade);
