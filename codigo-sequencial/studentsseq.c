@@ -32,7 +32,7 @@ int main(void)
 
     // Medição do tempo de resposta:
     #ifdef RESPONSE_TIME_TESTING 
-    unsigned NRUNS = 10;
+    unsigned NRUNS = 50;
     double sum = 0;
     double *iterations = malloc(sizeof(double) * NRUNS);
 

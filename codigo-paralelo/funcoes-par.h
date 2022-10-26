@@ -387,3 +387,16 @@ void imprimir_matriz(unsigned *notas, unsigned regiao, unsigned cidades_por_regi
     printf("\n");
 }
 #endif
+
+#ifdef RESPONSE_TIME_TESTING
+#define MB (1024 * 1024)
+#define LARGEST_CACHE_SZ (8 * MB) //Tamanho da L3 dos pcs do cluster
+static unsigned char dummy_buffer[LARGEST_CACHE_SZ];
+
+void clean_cache()
+{
+    unsigned long long i;
+    for (i=0; i<LARGEST_CACHE_SZ; i++)
+    dummy_buffer[i] += 1;
+}
+#endif
