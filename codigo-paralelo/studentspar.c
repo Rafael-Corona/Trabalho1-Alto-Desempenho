@@ -223,6 +223,7 @@ int main(void)
     #ifdef RESPONSE_TIME_TESTING
     end = omp_get_wtime();
     fprintf(output_fp,"%lf\n", end-start);
+    fclose(output_fp);
     #else
     printf("Melhor região: Região %d\n", melhor_regiao);
     printf("Melhor cidade: Região %d, Cidade %d\n", regiao_melhor_cidade, melhor_cidade);
