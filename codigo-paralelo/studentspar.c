@@ -39,29 +39,21 @@ int main(void)
 
     // Medição do tempo de resposta:
     #ifdef RESPONSE_TIME_TESTING
-    unsigned NRUNS = 50;
-    double sum = 0;
-    double *iterations = malloc(sizeof(double) * NRUNS);
-
-    char filename[255] = "par";
-    char runs[10], r[15], c[15], a[15];
-    sprintf(runs, "%d", NRUNS);
+    char filename[255] = "par-";
+    char  r[15], c[15], a[15];
     sprintf(r, "%d", total_regioes);
     sprintf(c, "%d", cidades_por_regiao);
     sprintf(a, "%d", alunos_por_cidade);
-    strcat(filename, runs);
     strcat(filename, "exec-RCA");
     strcat(filename, r);
     strcat(filename, "-");
     strcat(filename, c);
     strcat(filename, "-");
     strcat(filename, a);    
-    FILE *output_fp = fopen(filename, "w");
+    FILE *output_fp = fopen(filename, "a");
 
-    for (unsigned i = 0; i < NRUNS; i++)
-    {
-        double start, end;
-        start = omp_get_wtime();
+    double start, end;
+    start = omp_get_wtime();
     #endif
 
     // Cálculos paralelos por cidade:
@@ -227,25 +219,8 @@ int main(void)
 
 
     #ifdef RESPONSE_TIME_TESTING
-        end = omp_get_wtime();
-        fprintf(output_fp,"Iteracao %u. Tempo de resposta = %lf\n",i , end-start);
-        sum += end-start;
-        iterations[i] = end-start;
-        clean_cache();
-    }
-    double average = sum / NRUNS;
-    double parcial = 0;
-    for (unsigned j = 0; j < NRUNS; j++)
-        parcial += pow(iterations[j] - average, 2);
-
-    fprintf(output_fp,"Tempo médio = %lf\n", average);
-    fprintf(output_fp,"Desvio padrão = %lf\n", parcial/NRUNS);
-
-    double z_value = 2.576; //correspondente ao intervalo de confiança de 99%
-    double error_margin = fabs(z_value * ((parcial/NRUNS) / sqrt(NRUNS)));
-
-    fprintf(output_fp,"Levando em conta um nível de confiança de 99%% a margem de erro é de: +-%lf", error_margin);
-
+    end = omp_get_wtime();
+    fprintf(output_fp,"%lf\n", end-start);
     #else
     printf("Melhor região: Região %d\n", melhor_regiao);
     printf("Melhor cidade: Região %d, Cidade %d\n", regiao_melhor_cidade, melhor_cidade);
