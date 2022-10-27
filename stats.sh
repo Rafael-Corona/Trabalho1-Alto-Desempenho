@@ -1,4 +1,4 @@
-for n in {1..5}; 
+for n in {1..50}; 
 do
     make paralelo
 done
