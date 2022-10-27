@@ -91,7 +91,7 @@ unsigned *gerar_notas(unsigned total_notas)
     return notas;
 }
 
-double obter_menor_valor_double(double *notas, unsigned idx_inicio, unsigned idx_fim)
+/*double obter_menor_valor_double(double *notas, unsigned idx_inicio, unsigned idx_fim)
 {
     double menor_media = NOTAS_POSSIVEIS;
 
@@ -102,9 +102,9 @@ double obter_menor_valor_double(double *notas, unsigned idx_inicio, unsigned idx
     }
 
     return menor_media;
-}
+}*/
 
-double obter_maior_valor_double(double *notas, unsigned idx_inicio, unsigned idx_fim)
+/*double obter_maior_valor_double(double *notas, unsigned idx_inicio, unsigned idx_fim)
 {
     double maior_media = NOTAS_POSSIVEIS;
 
@@ -115,12 +115,13 @@ double obter_maior_valor_double(double *notas, unsigned idx_inicio, unsigned idx
     }
 
     return maior_media;
-}
+}*/
 
 unsigned obter_menor_valor_int(unsigned *notas, unsigned idx_inicio, unsigned idx_fim)
 {
     unsigned menor_nota = NOTAS_POSSIVEIS;
 
+    #pragma omp parallel for reduction(min: menor_nota)
     for (unsigned i = idx_inicio; i <= idx_fim; i++)
     {
         if (notas[i] < menor_nota)
@@ -134,6 +135,7 @@ unsigned obter_maior_valor_int(unsigned *notas, unsigned idx_inicio, unsigned id
 {
     unsigned maior_nota = 0;
 
+    #pragma omp parallel for reduction(max: maior_nota)
     for (unsigned i = idx_inicio; i <= idx_fim; i++)
     {
         if (notas[i] > maior_nota)
@@ -143,7 +145,7 @@ unsigned obter_maior_valor_int(unsigned *notas, unsigned idx_inicio, unsigned id
     return maior_nota;
 }
 
-unsigned obter_menor_valor_long(unsigned long *notas, unsigned idx_inicio, unsigned idx_fim)
+/*unsigned obter_menor_valor_long(unsigned long *notas, unsigned idx_inicio, unsigned idx_fim)
 {
     unsigned menor_nota = NOTAS_POSSIVEIS;
 
@@ -154,9 +156,9 @@ unsigned obter_menor_valor_long(unsigned long *notas, unsigned idx_inicio, unsig
     }
 
     return menor_nota;
-}
+}*/
 
-unsigned obter_maior_valor_long(unsigned long *notas, unsigned idx_inicio, unsigned idx_fim)
+/*unsigned obter_maior_valor_long(unsigned long *notas, unsigned idx_inicio, unsigned idx_fim)
 {
     unsigned maior_nota = 0;
 
@@ -167,19 +169,18 @@ unsigned obter_maior_valor_long(unsigned long *notas, unsigned idx_inicio, unsig
     }
 
     return maior_nota;
-}
+}*/
 
 unsigned *somar_contagens(unsigned **lista_contagens, unsigned idx_inicio, unsigned idx_fim)
 {
     unsigned *resultado = (unsigned*) calloc(NOTAS_POSSIVEIS, sizeof(unsigned));
 
+    #pragma omp parallel for collapse(2)
     for (unsigned i = idx_inicio; i <= idx_fim; i++)
     {
         for (unsigned j = 0; j < NOTAS_POSSIVEIS; j++)
         {  
             resultado[j] += lista_contagens[i][j];
-            //resultado[j] += 1;
-            
         }
     }
     return resultado;
@@ -201,15 +202,18 @@ void obter_menor_maior_soma(unsigned *notas, unsigned *menor_nota, unsigned *mai
     unsigned maior = 0, menor = NOTAS_POSSIVEIS;
     unsigned long soma = 0;
 
+    #pragma omp simd
     for (unsigned i = idx_inicio; i <= idx_fim; i++)
     {
         soma += notas[i];
-    }  
+    }
+    #pragma omp simd
     for (unsigned i = idx_inicio; i <= idx_fim; i++)
     {
         if (notas[i] > maior)
             maior = notas[i];
-    }  
+    }
+    #pragma omp simd  
     for (unsigned i = idx_inicio; i <= idx_fim; i++)
     {
         if (notas[i] < menor)
@@ -225,6 +229,7 @@ unsigned *obter_contagem(unsigned *notas, unsigned idx_inicio, unsigned idx_fim)
 {
     unsigned *contagem = (unsigned*) calloc(NOTAS_POSSIVEIS, sizeof(unsigned));
 
+    #pragma omp simd
     for (unsigned i = idx_inicio; i <= idx_fim; i++)
     {
         contagem[notas[i]]++;
@@ -238,6 +243,7 @@ unsigned obter_melhor_regiao(unsigned long *soma_de_cada_regiao, unsigned idx_in
     unsigned regiao = 0;
     unsigned maior_soma = 0;
 
+    #pragma omp simd reduction(max: maior_soma)
     for (unsigned i = idx_inicio; i <= idx_fim; i++)
     {
         if (soma_de_cada_regiao[i] > maior_soma){
@@ -256,6 +262,7 @@ void melhor_cidade_e_sua_regiao(unsigned long *soma_de_cada_cidade, unsigned tot
     unsigned long maior_soma = 0;
     unsigned last = total_regioes * cidades_por_regiao-1;
 
+    #pragma omp simd
     for (unsigned i = 0; i <= last; i++)
     {
         if (soma_de_cada_cidade[i] > maior_soma){
@@ -266,7 +273,7 @@ void melhor_cidade_e_sua_regiao(unsigned long *soma_de_cada_cidade, unsigned tot
     }
 }
 
-unsigned soma_vetor_int(unsigned *notas, unsigned idx_inicio, unsigned idx_fim)
+/*unsigned soma_vetor_int(unsigned *notas, unsigned idx_inicio, unsigned idx_fim)
 {
     unsigned soma = 0;
 
@@ -274,19 +281,20 @@ unsigned soma_vetor_int(unsigned *notas, unsigned idx_inicio, unsigned idx_fim)
         soma += notas[i];
 
     return soma;
-}
+}*/
 
 unsigned long soma_vetor_long(unsigned long *notas, unsigned idx_inicio, unsigned idx_fim)
 {
     unsigned long soma = 0;
 
+    #pragma omp simd reduction(+: soma)
     for (unsigned i = idx_inicio; i <= idx_fim; i++)
         soma += notas[i];
 
     return soma;
 }
 
-double soma_vetor_double(double *medias, unsigned idx_inicio, unsigned idx_fim)
+/*double soma_vetor_double(double *medias, unsigned idx_inicio, unsigned idx_fim)
 {
     double soma = 0;
 
@@ -294,29 +302,32 @@ double soma_vetor_double(double *medias, unsigned idx_inicio, unsigned idx_fim)
         soma += medias[i];
 
     return soma;
-}
+}*/
 
 
 double calcular_soma_para_dp(unsigned *notas, double media, unsigned idx_inicio, unsigned idx_fim)
 {
     double soma = 0;
 
-    for (unsigned i = idx_inicio; i <= idx_fim; i++)
+    #pragma omp simd reduction(+: soma)
+    for (unsigned i = idx_inicio; i <= idx_fim; i++){
         soma += pow(notas[i] - media, 2);
+    }
 
     return soma;
 }
 
 
-unsigned *construir_contagem(unsigned *notas, unsigned idx_inicio, unsigned idx_fim)
+/*unsigned *construir_contagem(unsigned *notas, unsigned idx_inicio, unsigned idx_fim)
 {
     unsigned *contagem = (unsigned*) calloc(NOTAS_POSSIVEIS, sizeof(unsigned));
 
+    #pragma omp simd
     for (unsigned i = idx_inicio; i <= idx_fim; i++)
         contagem[notas[i]]++;
     
     return contagem;
-}
+}*/
 
 double calcular_mediana(unsigned *contagem, unsigned total)
 {

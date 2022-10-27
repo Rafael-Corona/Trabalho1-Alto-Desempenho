@@ -91,8 +91,8 @@ int main(void)
             media_de_cada_cidade[idx_cidade_dentro_brasil] = media_cidade;
             dp_cidade = sqrt(calcular_soma_para_dp(notas, media_cidade, idx_inicio_cid, idx_fim_cid) / (alunos_por_cidade - 1));
             dp_de_cada_cidade[idx_cidade_dentro_brasil] = dp_cidade;
-            #ifndef RESPONSE_TIME_TESTING
-            #endif
+            //#ifndef RESPONSE_TIME_TESTING
+            //#endif
         }
     }
 
@@ -100,12 +100,13 @@ int main(void)
     #ifndef RESPONSE_TIME_TESTING
     for (unsigned i = 0, cidade = 0, regiao = 0; i < cidades_por_regiao * total_regioes; i++)
     {
-        printf("Reg %d - Cid %d: menor: %d, maior %d, mediana: %.2lf, média: %.2lf e DP: %.2lf\n",
+        printf("Reg %d - Cid %d: menor: %d, maior: %d, mediana: %.2lf, média: %.2lf e DP: %.2lf\n",
                 regiao, cidade, menor_nota_de_cada_cidade[i], maior_nota_de_cada_cidade[i],
                 mediana_de_cada_cidade[i], media_de_cada_cidade[i], dp_de_cada_cidade[i]);
         cidade = (cidade + 1) % cidades_por_regiao;
         if (cidade == 0) regiao++;
     }
+    printf("\n");
     #endif
 
     // Cálculos paralelos por região:
@@ -151,10 +152,11 @@ int main(void)
     #ifndef RESPONSE_TIME_TESTING
     for (unsigned regiao = 0; regiao < total_regioes; regiao++)
     {
-        printf("Reg %d: menor: %d, maior %d, mediana: %.2lf, média: %.2lf e DP: %.2lf\n",
+        printf("Reg %d: menor: %d, maior: %d, mediana: %.2lf, média: %.2lf e DP: %.2lf\n",
                 regiao, menor_nota_de_cada_regiao[regiao], maior_nota_de_cada_regiao[regiao], mediana_de_cada_regiao[regiao],
                 media_de_cada_regiao[regiao], dp_de_cada_regiao[regiao]);
     }
+    printf("\n");
     #endif
 
     free(maior_nota_de_cada_cidade);
@@ -209,7 +211,7 @@ int main(void)
 
 
     #ifndef RESPONSE_TIME_TESTING
-    printf("\nBrasil: menor: %d, maior %d, mediana: %.2lf, média: %.2lf e DP: %.2lf\n",
+    printf("\nBrasil: menor: %d, maior: %d, mediana: %.2lf, média: %.2lf e DP: %.2lf\n\n",
             menor_nota_brasil, maior_nota_brasil, mediana_brasil, media_brasil, dp_brasil);
     #endif
     keep_valueU[0] = melhor_regiao;
