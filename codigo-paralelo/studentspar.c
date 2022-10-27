@@ -40,11 +40,13 @@ int main(void)
     // Medição do tempo de resposta:
     #ifdef RESPONSE_TIME_TESTING
     char filename[255] = "par-";
-    char  r[15], c[15], a[15];
+    char  r[15], c[15], a[15], t[10];
+    sprintf(t, "%d", TOTAL_THREADS);
     sprintf(r, "%d", total_regioes);
     sprintf(c, "%d", cidades_por_regiao);
     sprintf(a, "%d", alunos_por_cidade);
-    strcat(filename, "exec-RCA");
+    strcat(filename, t);
+    strcat(filename, "thread-RCA");
     strcat(filename, r);
     strcat(filename, "-");
     strcat(filename, c);
