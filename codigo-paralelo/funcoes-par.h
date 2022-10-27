@@ -20,6 +20,7 @@ unsigned teste[72] = {
 };
 #endif
 
+// Receber parâmetros
 void atribuir_parametros_entrada(unsigned *total_regioes, unsigned *cidades_por_regiao, unsigned *alunos_por_cidade, unsigned *semente)
 {
 
@@ -74,7 +75,7 @@ void atribuir_parametros_entrada(unsigned *total_regioes, unsigned *cidades_por_
     #endif
 }
 
-
+// Obter notas dos alunos a partir da seed recebida na entrada
 unsigned *gerar_notas(unsigned total_notas)
 {
     unsigned *notas = (unsigned*) malloc(total_notas * sizeof(unsigned));
@@ -91,32 +92,7 @@ unsigned *gerar_notas(unsigned total_notas)
     return notas;
 }
 
-/*double obter_menor_valor_double(double *notas, unsigned idx_inicio, unsigned idx_fim)
-{
-    double menor_media = NOTAS_POSSIVEIS;
-
-    for (unsigned i = idx_inicio; i <= idx_fim; i++)
-    {
-        if (notas[i] < menor_media)
-            menor_media = notas[i];
-    }
-
-    return menor_media;
-}*/
-
-/*double obter_maior_valor_double(double *notas, unsigned idx_inicio, unsigned idx_fim)
-{
-    double maior_media = NOTAS_POSSIVEIS;
-
-    for (unsigned i = idx_inicio; i <= idx_fim; i++)
-    {
-        if (notas[i] < maior_media)
-            maior_media = notas[i];
-    }
-
-    return maior_media;
-}*/
-
+// Função com redução para obter valor mínimo
 unsigned obter_menor_valor_int(unsigned *notas, unsigned idx_inicio, unsigned idx_fim)
 {
     unsigned menor_nota = NOTAS_POSSIVEIS;
@@ -131,6 +107,7 @@ unsigned obter_menor_valor_int(unsigned *notas, unsigned idx_inicio, unsigned id
     return menor_nota;
 }
 
+// Função com redução para obter valor máximo
 unsigned obter_maior_valor_int(unsigned *notas, unsigned idx_inicio, unsigned idx_fim)
 {
     unsigned maior_nota = 0;
@@ -145,32 +122,7 @@ unsigned obter_maior_valor_int(unsigned *notas, unsigned idx_inicio, unsigned id
     return maior_nota;
 }
 
-/*unsigned obter_menor_valor_long(unsigned long *notas, unsigned idx_inicio, unsigned idx_fim)
-{
-    unsigned menor_nota = NOTAS_POSSIVEIS;
-
-    for (unsigned i = idx_inicio; i <= idx_fim; i++)
-    {
-        if (notas[i] < menor_nota)
-            menor_nota = notas[i];
-    }
-
-    return menor_nota;
-}*/
-
-/*unsigned obter_maior_valor_long(unsigned long *notas, unsigned idx_inicio, unsigned idx_fim)
-{
-    unsigned maior_nota = 0;
-
-    for (unsigned i = idx_inicio; i <= idx_fim; i++)
-    {
-        if (notas[i] > maior_nota)
-            maior_nota = notas[i];
-    }
-
-    return maior_nota;
-}*/
-
+// Função para obter contagens -> Paralelismo em for aninhado
 unsigned *somar_contagens(unsigned **lista_contagens, unsigned idx_inicio, unsigned idx_fim)
 {
     unsigned *resultado = (unsigned*) calloc(NOTAS_POSSIVEIS, sizeof(unsigned));
@@ -186,6 +138,7 @@ unsigned *somar_contagens(unsigned **lista_contagens, unsigned idx_inicio, unsig
     return resultado;
 }
 
+// Liberação de memória utilizada
 void free_lista_contagem(unsigned **lista_contagens, unsigned size)
 {
     for (unsigned i = 0; i < size; i++)
@@ -196,6 +149,7 @@ void free_lista_contagem(unsigned **lista_contagens, unsigned size)
 
 }
 
+// Obter soma, maior e menor valores através da diretiva simd
 void obter_menor_maior_soma(unsigned *notas, unsigned *menor_nota, unsigned *maior_nota, 
                                             unsigned long *soma_notas, unsigned idx_inicio, unsigned idx_fim)
 {
@@ -225,6 +179,7 @@ void obter_menor_maior_soma(unsigned *notas, unsigned *menor_nota, unsigned *mai
     *soma_notas = soma;
 }
 
+// Função simd para contagem
 unsigned *obter_contagem(unsigned *notas, unsigned idx_inicio, unsigned idx_fim)
 {
     unsigned *contagem = (unsigned*) calloc(NOTAS_POSSIVEIS, sizeof(unsigned));
@@ -238,6 +193,7 @@ unsigned *obter_contagem(unsigned *notas, unsigned idx_inicio, unsigned idx_fim)
     return contagem;
 }
 
+// Redução simd para melhor região (max)
 unsigned obter_melhor_regiao(unsigned long *soma_de_cada_regiao, unsigned idx_inicio, unsigned idx_fim)
 {
     unsigned regiao = 0;
@@ -254,6 +210,7 @@ unsigned obter_melhor_regiao(unsigned long *soma_de_cada_regiao, unsigned idx_in
     return regiao;
 }
 
+// Diretiva simd para obter melhor cidade e sua região
 void melhor_cidade_e_sua_regiao(unsigned long *soma_de_cada_cidade, unsigned total_regioes, unsigned cidades_por_regiao ,unsigned *melhor_cidade, unsigned*regiao)
 {
     *melhor_cidade = 0;
@@ -273,16 +230,7 @@ void melhor_cidade_e_sua_regiao(unsigned long *soma_de_cada_cidade, unsigned tot
     }
 }
 
-/*unsigned soma_vetor_int(unsigned *notas, unsigned idx_inicio, unsigned idx_fim)
-{
-    unsigned soma = 0;
-
-    for (unsigned i = idx_inicio; i <= idx_fim; i++)
-        soma += notas[i];
-
-    return soma;
-}*/
-
+// Redução simd para obter soma
 unsigned long soma_vetor_long(unsigned long *notas, unsigned idx_inicio, unsigned idx_fim)
 {
     unsigned long soma = 0;
@@ -294,17 +242,7 @@ unsigned long soma_vetor_long(unsigned long *notas, unsigned idx_inicio, unsigne
     return soma;
 }
 
-/*double soma_vetor_double(double *medias, unsigned idx_inicio, unsigned idx_fim)
-{
-    double soma = 0;
-
-    for (unsigned i = idx_inicio; i <= idx_fim; i++)
-        soma += medias[i];
-
-    return soma;
-}*/
-
-
+// Redução simd para obter soma
 double calcular_soma_para_dp(unsigned *notas, double media, unsigned idx_inicio, unsigned idx_fim)
 {
     double soma = 0;
@@ -317,18 +255,8 @@ double calcular_soma_para_dp(unsigned *notas, double media, unsigned idx_inicio,
     return soma;
 }
 
-
-/*unsigned *construir_contagem(unsigned *notas, unsigned idx_inicio, unsigned idx_fim)
-{
-    unsigned *contagem = (unsigned*) calloc(NOTAS_POSSIVEIS, sizeof(unsigned));
-
-    #pragma omp simd
-    for (unsigned i = idx_inicio; i <= idx_fim; i++)
-        contagem[notas[i]]++;
-    
-    return contagem;
-}*/
-
+// Cálculo da mediana de maneira sequencial
+// Feito dessa forma devida à quantidade de condicionais e diferentes retornos definidos dentro dos loops
 double calcular_mediana(unsigned *contagem, unsigned total)
 {
     unsigned  qtd_contados = 0, metade = total / 2;

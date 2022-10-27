@@ -68,6 +68,7 @@ int main(void)
     unsigned long *soma_de_cada_cidade = (unsigned long*) malloc(sizeof(unsigned long) * cidades_por_regiao * total_regioes);
     unsigned **contagem_de_cada_cidade = (unsigned**) malloc(sizeof(unsigned*) * cidades_por_regiao * total_regioes);
 
+    // Paralelismo em for aninhado -> análise das cidades
     #pragma omp parallel for collapse(2)
     for (unsigned regiao = 0; regiao < total_regioes; regiao++)
     {
@@ -91,8 +92,6 @@ int main(void)
             media_de_cada_cidade[idx_cidade_dentro_brasil] = media_cidade;
             dp_cidade = sqrt(calcular_soma_para_dp(notas, media_cidade, idx_inicio_cid, idx_fim_cid) / (alunos_por_cidade - 1));
             dp_de_cada_cidade[idx_cidade_dentro_brasil] = dp_cidade;
-            //#ifndef RESPONSE_TIME_TESTING
-            //#endif
         }
     }
 
@@ -123,6 +122,7 @@ int main(void)
     printf("\n");
     #endif
 
+    // Paralelismo em for -> análise das regiões
     #pragma omp parallel for
     for (unsigned regiao = 0; regiao < total_regioes; regiao++)
     {
@@ -159,11 +159,10 @@ int main(void)
     printf("\n");
     #endif
 
+    // Liberar memória de variáveis já utilizadas
     free(maior_nota_de_cada_cidade);
     free(menor_nota_de_cada_cidade);
     free_lista_contagem(contagem_de_cada_cidade, cidades_por_regiao * total_regioes);
-
-   
 
     // Cálculo paralelo para o Brasil:
     unsigned menor_nota_brasil, maior_nota_brasil;
@@ -171,25 +170,30 @@ int main(void)
     double mediana_brasil, media_brasil, dp_brasil;
     unsigned *contagem_brasil;
     unsigned melhor_regiao, regiao_melhor_cidade, melhor_cidade;
-    
+
+    // Definição de sections -> análise do Brasil
     #pragma omp sections
     {
+        // Obter maior nota
         #pragma omp section
         {
             maior_nota_brasil = obter_maior_valor_int(maior_nota_de_cada_regiao, 0, total_regioes-1);
             free(maior_nota_de_cada_regiao);
         }
+        // Obter menor nota
         #pragma omp section
         {
             menor_nota_brasil = obter_menor_valor_int(menor_nota_de_cada_regiao, 0, total_regioes-1);
             free(menor_nota_de_cada_regiao);
         }
+        // Obter média e desvio padrão
         #pragma omp section
         {
             soma_brasil = soma_vetor_long(soma_de_cada_regiao, 0,total_regioes-1);
             media_brasil =  (double) soma_brasil / total_final_notas;
             dp_brasil = sqrt(calcular_soma_para_dp(notas, media_brasil, 0, total_final_notas - 1) / (total_final_notas - 1));
         }
+        // Obter mediana
         #pragma omp section
         {
             contagem_brasil = somar_contagens(contagem_de_cada_regiao, 0, total_regioes-1);
@@ -197,11 +201,13 @@ int main(void)
             mediana_brasil = calcular_mediana(contagem_brasil, total_final_notas);
             free(contagem_brasil);
         }
+        // Definir melhor região
         #pragma omp section
         {
             melhor_regiao = obter_melhor_regiao(soma_de_cada_regiao, 0, total_regioes-1);
             free(soma_de_cada_regiao);
         }
+        // Definir melhor cidade e sua região
         #pragma omp section
         {
             melhor_cidade_e_sua_regiao(soma_de_cada_cidade, total_regioes, cidades_por_regiao, &melhor_cidade, &regiao_melhor_cidade);

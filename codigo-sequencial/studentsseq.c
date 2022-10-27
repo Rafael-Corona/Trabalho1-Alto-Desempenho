@@ -63,6 +63,7 @@ int main(void)
     unsigned long *soma_de_cada_cidade = (unsigned long*) malloc(sizeof(unsigned long) * cidades_por_regiao * total_regioes);
     unsigned **contagem_de_cada_cidade = (unsigned**) malloc(sizeof(unsigned*) * cidades_por_regiao * total_regioes);
 
+    // Análise das cidades
     for (unsigned regiao = 0; regiao < total_regioes; regiao++)
     {
         for (unsigned cidade = 0; cidade < cidades_por_regiao; cidade++)
@@ -104,6 +105,8 @@ int main(void)
     #ifndef RESPONSE_TIME_TESTING
     printf("\n");
     #endif
+
+    // Análise das regiões
     for (unsigned regiao = 0; regiao < total_regioes; regiao++)
     {
         
@@ -135,6 +138,7 @@ int main(void)
         #endif
     }
 
+    // Liberação de variáveis já analisadas
     free(maior_nota_de_cada_cidade);
     free(menor_nota_de_cada_cidade);
     free_lista_contagem(contagem_de_cada_cidade, cidades_por_regiao * total_regioes);
