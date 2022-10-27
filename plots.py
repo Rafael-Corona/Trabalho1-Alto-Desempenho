@@ -40,9 +40,6 @@
     -> Arquivos speedups na forma:
     <linhas do arquivo>
     <populacao_considerada> <speedup_2_threads> <speedup_4_threads> <speedup_8_threads>
-    <total_threads_utilizadas> <tempo_tamanho_1> <tempo_tamanho_2> ... <tempo_tamanho_n>
-    <total_threads_utilizadas> <tempo_tamanho_1> <tempo_tamanho_2> ... <tempo_tamanho_n>
-    <total_threads_utilizadas> <tempo_tamanho_1> <tempo_tamanho_2> ... <tempo_tamanho_n>
     ...
 '''
 
