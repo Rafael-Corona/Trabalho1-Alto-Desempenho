@@ -1,7 +1,7 @@
 #define NOTAS_POSSIVEIS 101
 #define NOME_ARQ_ENTRADA "entrada.txt"
 
-#define TOTAL_THREADS 4
+#define TOTAL_THREADS 2
 
 #ifdef DEBUG
 unsigned teste[72] = {
