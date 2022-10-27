@@ -201,32 +201,20 @@ void obter_menor_maior_soma(unsigned *notas, unsigned *menor_nota, unsigned *mai
     unsigned maior = 0, menor = NOTAS_POSSIVEIS;
     unsigned long soma = 0;
 
-    #pragma omp sections
+    for (unsigned i = idx_inicio; i <= idx_fim; i++)
     {
-        #pragma omp section
-        {
-            for (unsigned i = idx_inicio; i <= idx_fim; i++)
-            {
-                soma += notas[i];
-            }  
-        }
-        #pragma omp section
-        {
-            for (unsigned i = idx_inicio; i <= idx_fim; i++)
-            {
-                if (notas[i] > maior)
-                    maior = notas[i];
-            }  
-        }
-        #pragma omp section
-        {
-            for (unsigned i = idx_inicio; i <= idx_fim; i++)
-            {
-                if (notas[i] < menor)
-                    menor = notas[i];
-            }  
-        }
-    }
+        soma += notas[i];
+    }  
+    for (unsigned i = idx_inicio; i <= idx_fim; i++)
+    {
+        if (notas[i] > maior)
+            maior = notas[i];
+    }  
+    for (unsigned i = idx_inicio; i <= idx_fim; i++)
+    {
+        if (notas[i] < menor)
+            menor = notas[i];
+    }  
 
     *maior_nota = maior;
     *menor_nota = menor;
